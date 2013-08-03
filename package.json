@@ -29,7 +29,9 @@
     "cheerio": "0.12.0",
     "strftime": "*",
     "underscore": "1.5.1",
-    "sprintf": "0.1.1"
+    "sprintf": "0.1.1",
+    "mocha": "1.12.0",
+    "sinon": "1.7.2"
   },
 
   "engines": {
