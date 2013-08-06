@@ -4,14 +4,24 @@ This is Ralph, a Campfire bot.  He's based on GitHub's Campfire bot framework, h
 
 ## Setup
 
+Install the dependencies:
+
     npm install -g hubot coffee-script
+    # In the ralph-hubot directory:
+    npm install
+
+Set up Heroku:
+
     git remote add heroku git@heroku.com:ralph-hubot.git
+
 
 ### Testing Hubot Locally
 
 You can test your hubot by running the following.
 
-    % bin/hubot
+    # The --alias lets you do '/pug' instead of 'hubot pug'
+    bin/hubot --alias /
+    Hubot>
 
 You'll see some start up output about where your scripts come from and a
 prompt.
