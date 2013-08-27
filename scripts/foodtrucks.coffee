@@ -30,14 +30,14 @@ class FoodTruck
     if availableTrucks.length == 0
       NO_FOOD_TRUCKS
     else
-      byName = (a, b) ->
+      byNameLength = (a, b) ->
         a.name().length - b.name().length
 
       byLocation = (a, b) ->
         a.location() < b.location()
 
-      longestTruckNameLength = availableTrucks.sort(byName).slice(-1)[0].name().length
-      availableTrucks.sort(byLocation).map((truck) ->
+      longestTruckNameLength = availableTrucks.sort(byNameLength).slice(-1)[0].name().length
+      "Lunch trucks:\n" + availableTrucks.sort(byLocation).map((truck) ->
         truck.prettyInformation(longestTruckNameLength)
       ).join("\n")
 
@@ -48,6 +48,7 @@ class FoodTruck
 
 class Truck
   NEAR_OFFICE = /Financial|(South Station)|Greenway|(City Hall)|(Dewey Square)|(Boston Common)|Chinatown/
+  TIME_OF_DAY = 'Lunch'
 
   constructor: (element) ->
     @element = element
@@ -68,7 +69,7 @@ class Truck
     @find('.dow').text() == @dayOfWeek()
 
   timeIsNow: ->
-    @find('.tod').text() == @timeOfDay()
+    @find('.tod').text() == TIME_OF_DAY
 
   isNearOffice: ->
     @find('.loc').text().match(NEAR_OFFICE)
@@ -78,16 +79,6 @@ class Truck
 
   dayOfWeek: ->
     strftime('%A', new Date())
-
-  timeOfDay: ->
-    hour = new Date().getHours()
-
-    if 0 <= hour <= 9
-      'Breakfast'
-    else if 10 <= hour <= 15
-      'Lunch'
-    else
-      'Dinner'
 
 module.exports = (robot) ->
 
