@@ -1,5 +1,7 @@
 # Description:
-#   Get a list of foodtrucks in your area (currently, only Boston).
+#   Get a list of foodtrucks in your area (currently, only Boston). Instead of
+#   sending a command, you visit a URL:
+#   http://ralph-hubot.herokuapp.com/foodtrucks
 #
 # Dependencies:
 #   cheerio
@@ -10,8 +12,8 @@
 # Configuration:
 #   None
 #
-# Commands:
-#   hubot foodtrucks - See food trucks in your area
+# URLs:
+#   /foodtrucks - See food trucks in your area
 
 strftime = require 'strftime'
 cheerio = require 'cheerio'
@@ -81,11 +83,16 @@ class Truck
     strftime('%A', new Date())
 
 module.exports = (robot) ->
+  path = "/foodtrucks"
 
   robot.respond /foodtrucks/i, (msg) ->
+    newUrl = process.env.HEROKU_URL + path
+    msg.send "To avoid clutter, this is now a URL instead of a command. Visit " + newUrl
+
+  robot.router.get path, (req, res) ->
     URL = 'http://www.cityofboston.gov/business/mobile/schedule-app-min.asp'
 
-    msg.http(URL)
-      .get() (err, res, body) ->
-        foodTruck = new FoodTruck(body)
-        msg.send foodTruck.all()
+    robot.http(URL).get() (err, r, body) ->
+      foodTruck = new FoodTruck(body)
+      all = foodTruck.all()
+      res.end all
