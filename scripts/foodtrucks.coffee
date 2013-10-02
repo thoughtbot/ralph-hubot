@@ -36,7 +36,14 @@ class FoodTruck
         a.name().length - b.name().length
 
       byLocation = (a, b) ->
-        a.location() < b.location()
+        location = a.location()
+        otherLocation = b.location()
+        if location < otherLocation
+          -1
+        else if location > otherLocation
+          1
+        else
+          0
 
       longestTruckNameLength = availableTrucks.sort(byNameLength).slice(-1)[0].name().length
       "Lunch trucks:\n" + availableTrucks.sort(byLocation).map((truck) ->
