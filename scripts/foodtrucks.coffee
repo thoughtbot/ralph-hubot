@@ -69,10 +69,14 @@ class Truck
     sprintf "%-#{justification}s @ %s", @name(), @location()
 
   name: ->
-    @find('.com a').text()
+    name = @find('.com a').text()
+    NormalizedTruckName.normalize(name)
 
   location: ->
-    @find('.loc').text().split(';').slice(-1)[0].replace(/^\(\d+\) /, '')
+    machineLocation = @find('.loc').text().split(';').slice(-1)[0].
+      replace(/^\(\d+\) /, '').
+      replace('Greenway,Congress', 'Greenway, Congress')
+    HumanLocation.normalize(machineLocation)
 
   dayIsToday: ->
     @find('.dow').text() == @dayOfWeek()
@@ -88,6 +92,24 @@ class Truck
 
   dayOfWeek: ->
     strftime('%A', new Date())
+
+class HumanLocation
+  MAP =
+    'Boston Common, Brewer Fountain by Tremont and Boylston Streets': 'Boston Common'
+    'Rose Kennedy Greenway, Dewey Square, South Station': 'South Station plaza (walk up Summer St towards DTX)'
+    'Financial District, Milk and Kilby Streets': 'Milk & Kilby (left on Washington, right on Milk, go past the park)'
+    'Chinatown/Park Street, Boylston St near Washington St': 'Chinatown Station (right on Washington until Boylston)'
+
+  @normalize: (lessHumanLocation) ->
+    MAP[lessHumanLocation] || lessHumanLocation
+
+class NormalizedTruckName
+  @normalize: (truckName) ->
+    truckName.
+      replace(/[A-Z]{3}$/, '').
+      replace(/\d$/, '').
+      replace(/^ +/, '').
+      replace(/\ +$/, '')
 
 module.exports = (robot) ->
   path = "/foodtrucks"
