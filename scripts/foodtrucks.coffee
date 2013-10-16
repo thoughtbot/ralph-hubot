@@ -73,9 +73,7 @@ class Truck
     NormalizedTruckName.normalize(name)
 
   location: ->
-    machineLocation = @find('.loc').text().split(';').slice(-1)[0].
-      replace(/^\(\d+\) /, '').
-      replace('Greenway,Congress', 'Greenway, Congress')
+    machineLocation = @find('.loc').text().split(';').slice(-1)[0]
     HumanLocation.normalize(machineLocation)
 
   dayIsToday: ->
@@ -101,7 +99,10 @@ class HumanLocation
     'Chinatown/Park Street, Boylston St near Washington St': 'Chinatown Station (right on Washington until Boylston)'
 
   @normalize: (lessHumanLocation) ->
-    MAP[lessHumanLocation] || lessHumanLocation
+    cleaned = lessHumanLocation.
+      replace(/^\(\d+\) /, '').
+      replace('Greenway,Congress', 'Greenway, Congress')
+    MAP[cleaned] || cleaned
 
 class NormalizedTruckName
   @normalize: (truckName) ->
