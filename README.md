@@ -31,9 +31,9 @@ prompt.
     [Sun, 04 Dec 2011 18:41:11 GMT] INFO Loading scripts from /home/tomb/Development/hubot/src/scripts
     Hubot>
 
-Then you can interact with hubot by typing `hubot help`.
+Then you can interact with hubot by typing `/help`.
 
-    Hubot> hubot help
+    Hubot> /help
 
     Hubot> animate me <query> - The same thing as `image me`, except adds a few
     convert me <expression> to <units> - Convert expression to given units.
