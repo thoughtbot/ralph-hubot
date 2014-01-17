@@ -59,8 +59,11 @@ module.exports = (robot) ->
     futureMessager = new FutureMessager(robot)
 
     # Listen for messages like "Hey future Joe, tell me a joke".
-    robot.hear /future ([a-z]+)/i, (msg) ->
-      futureMessager.saveForLater(msg)
+    robot.hear /([a-z]+)/i, (msg) ->
+      # WIP
+      for own key, user of robot.brain.data.users
+        # if user not in room
+        futureMessager.saveForLater(msg)
 
     # When a user enters, tell them about the messages they missed.
     robot.enter (msg) ->
