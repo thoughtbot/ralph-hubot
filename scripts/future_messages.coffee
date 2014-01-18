@@ -54,7 +54,7 @@ class FutureMessager
   prefixedWith: (nickname, possibleUsernames) ->
     lowerNickname = nickname.toLowerCase()
     username for username in possibleUsernames when (
-      username.toLowerCase().lastIndexOf(lowerNickname, 0) is 0
+      lowerNickname.toLowerCase().lastIndexOf(username, 0) is 0
     )
 
 module.exports = (robot) ->
