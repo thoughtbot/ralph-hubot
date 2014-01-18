@@ -1,10 +1,11 @@
 # Description:
-#   Save "Hey Future Joe, check out this link" type messages and say them when
-#   Joe (e.g.) comes back.
+#   Save messages of the format "Joe: check out this link". The message must
+#   start with (e.g.) "Joe: " or "Joe, ". It then reprints the messages when Joe
+#   comes back into the room.
 #
 # Dependencies:
 #   * A robot.brain that saves to persistent storage. I've only tested this with
-  #   redis-brain (available by default)
+#     redis-brain (available by default)
 #   * Underscore.js
 #
 # Configuration:
@@ -14,44 +15,55 @@ _ = require 'underscore'
 
 class FutureMessager
   constructor: (robot) ->
-    robot.brain.data.futureMessages ?= {}
-    @brain = robot.brain.data.futureMessages
+    @brain = robot.brain
+    @brain.data.futureMessages ?= {}
+    @messages = @brain.data.futureMessages
 
-  saveForLater: (msg) ->
-    targetUser = msg.match[1].toLowerCase()
+  maybeSaveForLater: (msg, targetUser) ->
+    if @targetUserNotInRoom(targetUser)
+      sender = msg.message.user.name
+      msg.send "#{sender}, #{targetUser} isn't in the room, but I'll relay that message when they come back."
+      @saveForLater(msg, targetUser)
+
+  saveForLater: (msg, targetUser) ->
     sender = msg.message.user.name
     room = msg.message.user.room
-    @brain[room] ?= {}
-    @brain[room][targetUser] ?= []
+    @messages[room] ?= {}
+    @messages[room][targetUser] ?= []
+    @messages[room][targetUser].push(@textForLater(msg.message.text, sender))
 
-    @brain[room][targetUser].push(@textForLater(msg, sender))
-    msg.send "OK #{sender}, I'll tell #{targetUser} that when they get back."
-
-  textForLater: (msg, sender) ->
+  textForLater: (text, sender) ->
     timestamp = (new Date()).toLocaleString()
-    "[#{timestamp}] From: #{sender} | #{msg.message.text}"
+    "[#{timestamp}] From: #{sender} | #{text}"
 
   tellUserAboutMissedMessages: (msg) ->
     newlyEnteredUsername = msg.message.user.name
     room = msg.message.user.room
 
-    if @brain[room]?
+    if @messages[room]?
       # Scan stored matches for newly-entered user
-      resultOfScanningForPings = @prefixedWith(newlyEnteredUsername, _.keys(@brain[room]))
+      resultOfScanningForPings = @fuzzyIsInList(newlyEnteredUsername, _.keys(@messages[room]))
       if resultOfScanningForPings.length > 0
         sentNotification = false
         for previouslyPingedUsername in resultOfScanningForPings
-          if @brain[room][previouslyPingedUsername].length > 0
+          if @messages[room][previouslyPingedUsername].length > 0
             if sentNotification is false
               # Notify them that they have some messages coming up
               msg.send "Hey #{newlyEnteredUsername}, you have some messages:"
               sentNotification = true
-          for pastMessage in @brain[room][previouslyPingedUsername]
+          @messages[room][previouslyPingedUsername].sort()
+          for pastMessage in @messages[room][previouslyPingedUsername]
             msg.send "> #{pastMessage}"
-          @brain[room][previouslyPingedUsername] = []
+          @messages[room][previouslyPingedUsername] = []
+
+  targetUserNotInRoom: (targetUser) ->
+    ! @fuzzyIsInList(targetUser, @usernamesInRoom())
+
+  usernamesInRoom: ->
+    user.name.toLowerCase() for own key, user of @brain.data.users
 
   # Find names in the possibleUsernames that start with the given nickname.
-  prefixedWith: (nickname, possibleUsernames) ->
+  fuzzyIsInList: (nickname, possibleUsernames) ->
     lowerNickname = nickname.toLowerCase()
     username for username in possibleUsernames when (
       lowerNickname.toLowerCase().lastIndexOf(username, 0) is 0
@@ -62,9 +74,11 @@ module.exports = (robot) ->
   robot.brain.on 'loaded', ->
     futureMessager = new FutureMessager(robot)
 
-    # Listen for messages like "Hey future Joe, tell me a joke".
-    robot.hear /future ([a-z]+)/i, (msg) ->
-      futureMessager.saveForLater(msg)
+    # Listen for messages like "Joe: tell me a joke". The username must start
+    # the message.
+    robot.hear /^([a-z ë]+)[,:]/i, (msg) ->
+      targetUser = msg.match[1].toLowerCase()
+      futureMessager.maybeSaveForLater(msg, targetUser)
 
     # When a user enters, tell them about the messages they missed.
     robot.enter (msg) ->
