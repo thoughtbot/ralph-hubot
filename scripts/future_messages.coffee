@@ -32,7 +32,7 @@ class FutureMessager
     "[#{timestamp}] From: #{sender} | #{msg.message.text}"
 
   tellUserAboutMissedMessages: (msg) ->
-    newlyEnteredUsername = msg.message.user.name.toLowerCase()
+    newlyEnteredUsername = msg.message.user.name
     room = msg.message.user.room
 
     if @brain[room]?
