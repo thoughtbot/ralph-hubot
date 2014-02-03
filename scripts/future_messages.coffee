@@ -41,12 +41,10 @@ class FutureMessager
       if resultOfScanningForPings.length > 0
         sentNotification = false
         for previouslyPingedUsername in resultOfScanningForPings
-          if @brain[room][previouslyPingedUsername].length > 0
+          for pastMessage in @brain[room][previouslyPingedUsername]
             if sentNotification is false
-              # Notify them that they have some messages coming up
               msg.send "Hey #{newlyEnteredUsername}, you have some messages:"
               sentNotification = true
-          for pastMessage in @brain[room][previouslyPingedUsername]
             msg.send "> #{pastMessage}"
           @brain[room][previouslyPingedUsername] = []
 
