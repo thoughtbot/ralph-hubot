@@ -1,6 +1,7 @@
 # Ralph
 
-This is Ralph, a Campfire bot.  He's based on GitHub's Campfire bot framework, hubot. He hangs out in the "Everyone" and "Ralphy Boy" rooms. Use "Ralphy Boy" for testing so you don't annoy people.
+This is Ralph, a Campfire bot.  He's based on GitHub's Campfire bot framework,
+hubot. He hangs out in the "Everyone" room.
 
 ## Setup
 
