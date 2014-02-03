@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if ! command -v npm
+then
+  echo "Installing NPM"
+  brew install npm
+fi
+
+npm install -g hubot coffee-script
+npm install
+
+git remote add heroku git@heroku.com:ralph-hubot.git
+heroku join --app ralph-hubot

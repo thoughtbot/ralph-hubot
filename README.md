@@ -5,16 +5,7 @@ hubot. He hangs out in the "Everyone" room.
 
 ## Setup
 
-Install the dependencies:
-
-    npm install -g hubot coffee-script
-    # In the ralph-hubot directory:
-    npm install
-
-Set up Heroku:
-
-    git remote add heroku git@heroku.com:ralph-hubot.git
-
+    ./bin/setup
 
 ### Testing Hubot Locally
 
