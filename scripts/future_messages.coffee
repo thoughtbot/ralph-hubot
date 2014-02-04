@@ -38,15 +38,13 @@ class FutureMessager
     if @brain[room]?
       # Scan stored matches for newly-entered user
       resultOfScanningForPings = @prefixedWith(newlyEnteredUsername, _.keys(@brain[room]))
-      if resultOfScanningForPings.length > 0
-        sentNotification = false
-        for previouslyPingedUsername in resultOfScanningForPings
-          for pastMessage in @brain[room][previouslyPingedUsername]
-            if sentNotification is false
-              msg.send "Hey #{newlyEnteredUsername}, you have some messages:"
-              sentNotification = true
-            msg.send "> #{pastMessage}"
-          @brain[room][previouslyPingedUsername] = []
+      for previouslyPingedUsername in resultOfScanningForPings
+        @sendAllSavedMessagesFor(previouslyPingedUsername)
+
+  sendAllSavedMessagesFor: (username) ->
+    for pastMessage in @brain[room][username]
+      msg.send "> #{pastMessage}"
+    @brain[room][username] = []
 
   # Find names in the possibleUsernames that start with the given nickname.
   prefixedWith: (nickname, possibleUsernames) ->
