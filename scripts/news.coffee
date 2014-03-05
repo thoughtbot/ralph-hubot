@@ -8,28 +8,29 @@ class BotTimes
   FOUR_HOURS: 14400 * 1000
 
   constructor: (robot) ->
-    robot.brain.data.news ?= []
-    @news = robot.brain.data.news
+    @robot = robot
+    @robot.brain.data.news ?= []
+    @news = @robot.brain.data.news
 
   pitch: (msg) ->
     @news.push(msg)
 
-  deliver: (robot) =>
-    robot.messageRoom('Everyone', @news...)
-    @news = @_newestEightyPercentOf(@news)
+  deliver: =>
+    @robot.messageRoom('Everyone', @news...)
+    @_trimToNewestEightyPercent()
 
     setTimeout () =>
-      @deliver(robot)
+      @deliver()
     , @FOUR_HOURS
 
-  _newestEightyPercentOf: (array) ->
-    twentyPercentIndex = array.length * 0.2
-    array[twentyPercentIndex..array.length]
+  _trimToNewestEightyPercent: ->
+    twentyPercentIndex = @news.length * 0.2
+    @news = @news.slice(twentyPercentIndex, @news.length)
 
 module.exports = (robot) ->
   robot.brain.on 'loaded', ->
     theTimes = new BotTimes(robot)
-    theTimes.deliver(robot)
+    theTimes.deliver()
 
     # /pitch Derek is now the open source leader of Clearance. Thank you!
     robot.respond /pitch (.+)/i, (msg) ->
