@@ -34,3 +34,4 @@ module.exports = (robot) ->
     # /pitch Derek is now the open source leader of Clearance. Thank you!
     robot.respond /pitch (.+)/i, (msg) ->
       theTimes.pitch(msg.match[1])
+      msg.send "Word. I'll relay that every four hours or so over the next day."
