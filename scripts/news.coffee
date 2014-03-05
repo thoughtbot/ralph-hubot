@@ -5,7 +5,7 @@
 #   /pitch <story>. - Returns nothing. Records the news.
 
 class BotTimes
-  FOUR_HOURS: 14 * 1000
+  FOUR_HOURS: 14400 * 1000
 
   constructor: (robot) ->
     robot.brain.data.news ?= []
