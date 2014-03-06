@@ -2,7 +2,7 @@
 #   Write and read thoughtbot news.
 #
 # Commands:
-#   /pitch <story>. - Returns nothing. Records the news.
+#   /news <story>. - Returns nothing. Records the news.
 
 class BotTimes
   FOUR_HOURS: 14400 * 1000
@@ -11,7 +11,7 @@ class BotTimes
     @robot = robot
     @data = @robot.brain.data
 
-  pitch: (msg) ->
+  writeNews: (msg) ->
     @data['news'].push msg
 
   deliver: =>
@@ -31,7 +31,7 @@ module.exports = (robot) ->
     theTimes = new BotTimes(robot)
     theTimes.deliver()
 
-    # /pitch Derek is now the open source leader of Clearance. Thank you!
-    robot.respond /pitch (.+)/i, (msg) ->
-      theTimes.pitch msg.match[1]
+    # /news Derek is now the open source leader of Clearance. Thank you!
+    robot.respond /news (.+)/i, (msg) ->
+      theTimes.writeNews msg.match[1]
       msg.send "Word. I'll relay that every four hours or so over the next day."
