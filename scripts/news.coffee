@@ -10,12 +10,13 @@ class BotTimes
   constructor: (robot) ->
     @robot = robot
     @data = @robot.brain.data
+    @campfireRoom = process.env.EVERYONE_CAMPFIRE_ROOM or 'Shell'
 
   writeNews: (msg) ->
     @data['news'].push msg
 
   deliver: =>
-    @robot.messageRoom 'Everyone', @data['news']...
+    @robot.messageRoom @campfireRoom, @data['news']...
     @_trimToNewestEightyPercent()
 
     setTimeout () =>
