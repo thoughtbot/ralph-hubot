@@ -9,14 +9,13 @@ class BotTimes
 
   constructor: (robot) ->
     @robot = robot
-    @robot.brain.data.news ?= []
-    @news = @robot.brain.data.news
+    @data = @robot.brain.data
 
   pitch: (msg) ->
-    @news.push(msg)
+    @data['news'].push msg
 
   deliver: =>
-    @robot.messageRoom('Everyone', @news...)
+    @robot.messageRoom 'Everyone', @data['news']...
     @_trimToNewestEightyPercent()
 
     setTimeout () =>
@@ -24,8 +23,8 @@ class BotTimes
     , @FOUR_HOURS
 
   _trimToNewestEightyPercent: ->
-    twentyPercentIndex = @news.length * 0.2
-    @news = @news.slice(twentyPercentIndex, @news.length)
+    twentyPercentIndex = @data['news'].length * 0.2
+    @data['news'] = @data['news'][twentyPercentIndex..-1]
 
 module.exports = (robot) ->
   robot.brain.on 'loaded', ->
@@ -34,5 +33,5 @@ module.exports = (robot) ->
 
     # /pitch Derek is now the open source leader of Clearance. Thank you!
     robot.respond /pitch (.+)/i, (msg) ->
-      theTimes.pitch(msg.match[1])
+      theTimes.pitch msg.match[1]
       msg.send "Word. I'll relay that every four hours or so over the next day."
