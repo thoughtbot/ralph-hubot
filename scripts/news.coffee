@@ -10,6 +10,7 @@ class BotTimes
   constructor: (robot) ->
     @robot = robot
     @data = @robot.brain.data
+    @data['news'] ?= []
     @campfireRoom = process.env.EVERYONE_CAMPFIRE_ROOM or 'Shell'
 
   writeNews: (msg) ->
@@ -17,7 +18,8 @@ class BotTimes
 
   deliver: ->
     setTimeout () =>
-      @robot.messageRoom @campfireRoom, @data['news']...
+      if @data['news'].length > 0
+        @robot.messageRoom @campfireRoom, @data['news']...
       @_trimToNewestEightyPercent()
       @deliver()
     , @FOUR_HOURS
@@ -28,10 +30,20 @@ class BotTimes
 
 module.exports = (robot) ->
   robot.brain.on 'loaded', ->
-    theTimes = new BotTimes(robot)
-    theTimes.deliver()
+    robot.news = new BotTimes(robot)
+    robot.news.deliver()
 
     # /news Derek is now the open source leader of Clearance. Thank you!
     robot.respond /news (.+)/i, (msg) ->
-      theTimes.writeNews msg.match[1]
+      robot.news.writeNews msg.match[1]
       msg.send "Word. I'll relay that every four hours or so over the next day."
+
+  # curl \
+  #   -XPOST \
+  #   'http://ralph.thoughtbot.com/news' \
+  #   -H'Content-Type: application/json'
+  #   --data-binary '{"message":"Hello"}'
+  robot.router.post '/news', (req, res) ->
+    message = req.body.message
+    robot.news.writeNews message
+    res.status(201).send()
