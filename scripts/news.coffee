@@ -16,10 +16,9 @@ class BotTimes
     @data['news'].push msg
 
   deliver: ->
-    @robot.messageRoom @campfireRoom, @data['news']...
-    @_trimToNewestEightyPercent()
-
     setTimeout () =>
+      @robot.messageRoom @campfireRoom, @data['news']...
+      @_trimToNewestEightyPercent()
       @deliver()
     , @FOUR_HOURS
 
