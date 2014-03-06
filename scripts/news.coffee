@@ -15,7 +15,7 @@ class BotTimes
   writeNews: (msg) ->
     @data['news'].push msg
 
-  deliver: =>
+  deliver: ->
     @robot.messageRoom @campfireRoom, @data['news']...
     @_trimToNewestEightyPercent()
 
