@@ -20,13 +20,21 @@ class BotTimes
     setTimeout () =>
       if @data['news'].length > 0
         @robot.messageRoom @campfireRoom, @data['news']...
-      @_trimToNewestEightyPercent()
+      @_trim()
       @deliver()
     , @FOUR_HOURS
 
-  _trimToNewestEightyPercent: ->
-    twentyPercentIndex = @data['news'].length * 0.2
-    @data['news'] = @data['news'][twentyPercentIndex..-1]
+  _trim: ->
+    if @data['news'].length is 1
+      @data['news'] = []
+    else if @data['news'].length <= 6
+      @_trimOldestPercent(0.5)
+    else
+      @_trimOldestPercent(0.33)
+
+  _trimOldestPercent: (percentage) ->
+    index = @data['news'].length * percentage
+    @data['news'] = @data['news'][index..-1]
 
 module.exports = (robot) ->
   robot.brain.on 'loaded', ->
